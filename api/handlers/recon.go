@@ -1,20 +1,21 @@
 package handlers
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net"
 	"net/http"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
-	"regexp"
-	"io/ioutil"
-	"net"
-	"crypto/tls"
+
+	"myaptai/api/models"
 
 	"github.com/likexian/whois"
-	"myaptai/api/models"
 )
 
 // WhoisHandler handles WHOIS lookup requests
@@ -197,7 +198,7 @@ func PortScanHandler(w http.ResponseWriter, r *http.Request) {
 	var result string
 	if commandExists("nmap") {
 		args := []string{"-T4"}
-		
+
 		// Add scan type if specified
 		if req.ScanType != "" {
 			switch req.ScanType {
@@ -209,13 +210,13 @@ func PortScanHandler(w http.ResponseWriter, r *http.Request) {
 				args = append(args, "-sT")
 			}
 		}
-		
+
 		// Add ports
 		args = append(args, "-p", strings.Join(ports, ","))
-		
+
 		// Add target
 		args = append(args, req.Target)
-		
+
 		cmd := exec.Command("nmap", args...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -234,7 +235,7 @@ func PortScanHandler(w http.ResponseWriter, r *http.Request) {
 			portNum, _ := strconv.Atoi(port)
 			address := fmt.Sprintf("%s:%d", req.Target, portNum)
 			conn, err := net.DialTimeout("tcp", address, time.Duration(timeout)*time.Second)
-			
+
 			if err != nil {
 				results[port] = "closed"
 			} else {
@@ -242,7 +243,7 @@ func PortScanHandler(w http.ResponseWriter, r *http.Request) {
 				results[port] = "open"
 			}
 		}
-		
+
 		resultBytes, _ := json.MarshalIndent(results, "", "  ")
 		result = string(resultBytes)
 	}
@@ -278,11 +279,11 @@ func SubdomainEnumHandler(w http.ResponseWriter, r *http.Request) {
 	if commandExists("amass") {
 		// Use Amass for subdomain enumeration
 		args := []string{"enum", "-d", req.Domain}
-		
+
 		if req.UsePassive {
 			args = append(args, "-passive")
 		}
-		
+
 		cmd := exec.Command("amass", args...)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -293,20 +294,20 @@ func SubdomainEnumHandler(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		
+
 		// Parse the output to extract subdomains
 		subdomains := parseSubdomains(string(output), req.Domain)
-		
+
 		json.NewEncoder(w).Encode(models.APIResponse{
 			Status: "success",
 			Data:   subdomains,
 		})
 		return
 	}
-	
+
 	// Fallback to DNS lookup for common subdomains
 	commonSubdomains := []string{"www", "mail", "remote", "blog", "webmail", "server", "ns1", "ns2", "smtp", "secure", "vpn", "m", "shop", "ftp", "api"}
-	
+
 	results := make(map[string]string)
 	for _, sub := range commonSubdomains {
 		subdomain := fmt.Sprintf("%s.%s", sub, req.Domain)
@@ -315,7 +316,7 @@ func SubdomainEnumHandler(w http.ResponseWriter, r *http.Request) {
 			results[subdomain] = "found"
 		}
 	}
-	
+
 	json.NewEncoder(w).Encode(models.APIResponse{
 		Status: "success",
 		Data:   results,
@@ -457,7 +458,7 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 	if commandExists("whatweb") {
 		// Use more compatible options for WhatWeb
 		cmd := exec.Command("whatweb", "-a", "3", "--log-json", "-", "--colour", "never")
-		
+
 		// Remove the unsupported --max-links option
 		// Instead, we'll use the -d option for depth if available
 		if req.Depth > 0 && commandExists("grep") {
@@ -468,9 +469,9 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 				cmd.Args = append(cmd.Args, "-d", strconv.Itoa(req.Depth))
 			}
 		}
-		
+
 		cmd.Args = append(cmd.Args, target)
-		
+
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			json.NewEncoder(w).Encode(models.APIResponse{
@@ -480,7 +481,7 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		
+
 		// Parse the JSON output
 		var result interface{}
 		if err := json.Unmarshal(output, &result); err != nil {
@@ -491,14 +492,14 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		
+
 		json.NewEncoder(w).Encode(models.APIResponse{
 			Status: "success",
 			Data:   result,
 		})
 		return
 	}
-	
+
 	// Fallback to basic HTTP request and header analysis
 	client := &http.Client{
 		Timeout: 10 * time.Second,
@@ -506,7 +507,7 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 			return nil // Allow redirects
 		},
 	}
-	
+
 	resp, err := client.Get(target)
 	if err != nil {
 		json.NewEncoder(w).Encode(models.APIResponse{
@@ -516,7 +517,7 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer resp.Body.Close()
-	
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		json.NewEncoder(w).Encode(models.APIResponse{
@@ -525,10 +526,10 @@ func WebTechHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+
 	// Basic technology detection
 	technologies := detectWebTechnologies(resp.Header, string(body))
-	
+
 	json.NewEncoder(w).Encode(models.APIResponse{
 		Status: "success",
 		Data:   technologies,
@@ -575,14 +576,14 @@ func SSLScanHandler(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		
+
 		json.NewEncoder(w).Encode(models.APIResponse{
 			Status: "success",
 			Data:   string(output),
 		})
 		return
 	}
-	
+
 	// Fallback to basic TLS connection and certificate analysis
 	target := fmt.Sprintf("%s:%d", req.Target, port)
 	conn, err := tls.Dial("tcp", target, &tls.Config{
@@ -596,24 +597,24 @@ func SSLScanHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	
+
 	// Get connection state
 	state := conn.ConnectionState()
-	
+
 	// Extract certificate details
 	cert := state.PeerCertificates[0]
-	
+
 	result := map[string]interface{}{
-		"subject":            cert.Subject.String(),
-		"issuer":             cert.Issuer.String(),
-		"valid_from":         cert.NotBefore.String(),
-		"valid_until":        cert.NotAfter.String(),
-		"dns_names":          cert.DNSNames,
-		"version":            cert.Version,
-		"serial_number":      cert.SerialNumber.String(),
-		"tls_version":        tlsVersionToString(state.Version),
-		"cipher_suite":       tls.CipherSuiteName(state.CipherSuite),
-		"certificate_chain":  len(state.PeerCertificates),
+		"subject":             cert.Subject.String(),
+		"issuer":              cert.Issuer.String(),
+		"valid_from":          cert.NotBefore.String(),
+		"valid_until":         cert.NotAfter.String(),
+		"dns_names":           cert.DNSNames,
+		"version":             cert.Version,
+		"serial_number":       cert.SerialNumber.String(),
+		"tls_version":         tlsVersionToString(state.Version),
+		"cipher_suite":        tls.CipherSuiteName(state.CipherSuite),
+		"certificate_chain":   len(state.PeerCertificates),
 		"certificate_expired": time.Now().After(cert.NotAfter),
 	}
 
@@ -642,53 +643,53 @@ func commandExists(cmd string) bool {
 func parseSubdomains(output string, domain string) []string {
 	var subdomains []string
 	lines := strings.Split(output, "\n")
-	
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if strings.Contains(line, domain) {
 			subdomains = append(subdomains, line)
 		}
 	}
-	
+
 	return subdomains
 }
 
 // detectWebTechnologies performs basic web technology detection
 func detectWebTechnologies(headers http.Header, body string) map[string]interface{} {
 	technologies := make(map[string]interface{})
-	
+
 	// Server header
 	if server := headers.Get("Server"); server != "" {
 		technologies["Server"] = server
 	}
-	
+
 	// X-Powered-By header
 	if poweredBy := headers.Get("X-Powered-By"); poweredBy != "" {
 		technologies["X-Powered-By"] = poweredBy
 	}
-	
+
 	// Content-Management-System header
 	if cms := headers.Get("X-Generator"); cms != "" {
 		technologies["CMS"] = cms
 	}
-	
+
 	// Common frameworks and libraries detection
 	frameworks := map[string]string{
-		"jQuery":     `jquery[.-](\d+\.\d+\.\d+)`,
-		"Bootstrap":  `bootstrap[.-](\d+\.\d+\.\d+)`,
-		"React":      `react[.-](\d+\.\d+\.\d+)`,
-		"Angular":    `angular[.-](\d+\.\d+\.\d+)`,
-		"Vue.js":     `vue[.-](\d+\.\d+\.\d+)`,
-		"WordPress":  `wp-content|wordpress`,
-		"Drupal":     `drupal`,
-		"Joomla":     `joomla`,
-		"Magento":    `magento`,
-		"Laravel":    `laravel`,
-		"Django":     `django`,
-		"Express.js": `express`,
+		"jQuery":        `jquery[.-](\d+\.\d+\.\d+)`,
+		"Bootstrap":     `bootstrap[.-](\d+\.\d+\.\d+)`,
+		"React":         `react[.-](\d+\.\d+\.\d+)`,
+		"Angular":       `angular[.-](\d+\.\d+\.\d+)`,
+		"Vue.js":        `vue[.-](\d+\.\d+\.\d+)`,
+		"WordPress":     `wp-content|wordpress`,
+		"Drupal":        `drupal`,
+		"Joomla":        `joomla`,
+		"Magento":       `magento`,
+		"Laravel":       `laravel`,
+		"Django":        `django`,
+		"Express.js":    `express`,
 		"Ruby on Rails": `rails`,
 	}
-	
+
 	for framework, pattern := range frameworks {
 		re := regexp.MustCompile(pattern)
 		if re.MatchString(body) {
@@ -700,7 +701,7 @@ func detectWebTechnologies(headers http.Header, body string) map[string]interfac
 			}
 		}
 	}
-	
+
 	return technologies
 }
 
@@ -718,4 +719,4 @@ func tlsVersionToString(version uint16) string {
 	default:
 		return fmt.Sprintf("Unknown (%d)", version)
 	}
-} 
+}

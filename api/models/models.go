@@ -33,7 +33,7 @@ type SubdomainEnumRequest struct {
 }
 
 type DNSEnumRequest struct {
-	Domain   string   `json:"domain"`
+	Domain      string   `json:"domain"`
 	RecordTypes []string `json:"record_types,omitempty"` // A, AAAA, MX, NS, TXT, etc.
 }
 
@@ -52,4 +52,4 @@ type APIResponse struct {
 	Status  string      `json:"status"`
 	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
-} 
+}

@@ -6,8 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/gorilla/mux"
 	"myaptai/api/handlers"
+
+	"github.com/gorilla/mux"
 )
 
 // Middleware for logging and security
@@ -61,4 +62,4 @@ func main() {
 	if err := http.ListenAndServe(":"+port, router); err != nil {
 		log.Fatal(err)
 	}
-} 
+}
