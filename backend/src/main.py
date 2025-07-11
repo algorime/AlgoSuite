@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 from .agent import agent
-from .agent.payload_suggestor import payload_suggestor_agent
 from .agent.payload_suggestor_v2 import PayloadSuggestorV2
 from .config import settings
 
@@ -32,15 +31,6 @@ add_routes(
     enable_public_trace_link_endpoint=True,
 )
 
-# Add the payload suggestor agent routes
-add_routes(
-    app,
-    payload_suggestor_agent,
-    path="/payload-suggestor",
-    playground_type="default",
-    enable_feedback_endpoint=True,
-    enable_public_trace_link_endpoint=True,
-)
 
 payload_suggestor_v2_agent = PayloadSuggestorV2()
 

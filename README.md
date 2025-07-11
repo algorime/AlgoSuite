@@ -10,9 +10,36 @@ AlgoBrain acts as an interactive partner that augments pentester workflows by:
 - **Automating Research**: Intelligent web search and specialized security knowledge queries
 - **Providing Expert Guidance**: AI-powered analysis and suggestions for SQL injection testing
 - **Streamlining Workflows**: Real-time conversation interface with tool integration
-- **Maintaining Context**: Stateful conversations that remember your testing session
+- **Maintains Context**: Stateful conversations that remember your testing session.
+
+## 📚 Table of Contents
+
+- [🎯 Overview](#-overview)
+- [🤔 Why Contribute?](#-why-contribute)
+- [✨ Showcase](#-showcase)
+- [🚀 Quick Start](#-quick-start)
+- [⚙️ Configuration](#️-configuration)
+- [🎮 Usage](#-usage)
+- [🛠️ Technology Stack](#️-technology-stack)
+- [🧪 Features](#-features)
+- [🔒 Security Considerations](#-security-considerations)
+- [📁 Project Structure](#-project-structure)
+- [🤝 How to Contribute](#-how-to-contribute)
+- [✨ Contributors](#-contributors)
+- [📞 Support](#-support)
 
 ## 🏗️ Architecture
+## 🤔 Why Contribute?
+
+AlgoBrain is more than just a tool—it's a community-driven project with a mission to **empower cybersecurity professionals** through open-source AI. By contributing, you can:
+
+-   **🚀 Shape the Future of Pentesting**: Help build an intelligent assistant that makes vulnerability analysis faster, smarter, and more accessible.
+-   **💻 Work with Cutting-Edge Tech**: Gain hands-on experience with a modern stack, including **React 19**, **FastAPI**, **LangGraph**, and **Google's Gemini LLM**.
+-   **🤝 Join a Collaborative Community**: Collaborate with developers and security experts to solve real-world challenges.
+-   **🧠 Enhance Your Skills**: Whether you're a frontend developer, backend engineer, or AI enthusiast, there's a place for you to learn and grow.
+
+We're especially looking for frontend developers to help build a world-class user experience. If you're passionate about creating intuitive and powerful interfaces, your contributions will be highly valued!
+
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -36,6 +63,20 @@ AlgoBrain acts as an interactive partner that augments pentester workflows by:
               └──────────┘ └──────┘ └─────────┘
 ```
 
+## ✨ Showcase
+
+Here’s a sneak peek at AlgoBrain in action. These visuals highlight the key features and user interface of our AI-powered pentesting assistant.
+
+| Chat Interface | Studio Mode |
+| :---: | :---: |
+| *An intuitive, real-time conversation with the AI agent.* | *Advanced analysis of HTTP requests and responses.* |
+
+| Vulnerability Dashboard | Payload Editor |
+| :---: | :---: |
+| *Visualize vulnerability data with interactive charts.* | *Craft and test SQLi payloads with a powerful editor.* |
+
+We are actively looking for frontend developers to help us bring these interfaces to life and create a seamless user experience. If you have a passion for UI/UX design and development, your contributions would be invaluable!
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -46,48 +87,77 @@ AlgoBrain acts as an interactive partner that augments pentester workflows by:
 
 ### 🐳 Docker Deployment (Recommended)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/algorime/AlgoBrain.git
-   cd AlgoBrain
-   ```
+Get up and running in minutes with Docker.
 
-2. **Configure environment**
-   ```bash
-   cp backend/.env.example backend/.env
-   # Edit backend/.env with your API keys (see Configuration section)
-   ```
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/algorime/AlgoBrain.git
+    cd AlgoBrain
+    ```
 
-3. **Start the application**
-   ```bash
-   docker-compose up --build
-   ```
+2.  **Configure Environment**:
+    Create a `.env` file in the `backend/` directory with your API keys.
+    ```bash
+    cp backend/.env.example backend/.env
+    ```
+    *See the [Configuration](#️-configuration) section for more details.*
 
-4. **Access the application**
-   - Backend API: http://localhost:8001
-   - Interactive Playground: http://localhost:8001/agent/playground/
+3.  **Launch the Application**:
+    ```bash
+    docker-compose up --build
+    ```
+
+4.  **Access the Application**:
+    -   **Backend API**: `http://localhost:8001`
+    -   **Interactive Playground**: `http://localhost:8001/agent/playground/`
 
 ### 🔧 Manual Development Setup
 
-#### Backend Setup
+For more control over the development environment, you can run the frontend and backend services separately.
 
-```bash
-cd backend
-pip install -r requirements.txt
-cp .env.example .env
-# Configure your .env file
-uvicorn src.main:app --host 0.0.0.0 --port 8001
-```
+<details>
+<summary><strong>Backend Setup</strong></summary>
 
-#### Frontend Setup
+1.  **Navigate to the backend directory**:
+    ```bash
+    cd backend
+    ```
+2.  **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  **Configure environment**:
+    Create and configure your `.env` file.
+    ```bash
+    cp .env.example .env
+    ```
+4.  **Run the development server**:
+    ```bash
+    uvicorn src.main:app --host 0.0.0.0 --port 8001
+    ```
+</details>
 
-```bash
-cd frontend
-npm install
-cp .env.example .env
-# Configure your .env file
-npm run dev
-```
+<details>
+<summary><strong>Frontend Setup</strong></summary>
+
+1.  **Navigate to the frontend directory**:
+    ```bash
+    cd frontend
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Configure environment**:
+    Create and configure your `.env` file.
+    ```bash
+    cp .env.example .env
+    ```
+4.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
+</details>
 
 ## ⚙️ Configuration
 
@@ -184,11 +254,40 @@ curl -X POST "http://localhost:8001/agent/invoke" \
 - ✅ **Docker Deployment** for easy setup
 
 ### Planned (V2+)
-- 🔄 **HTTP Request Tool** for direct target interaction
-- 🔄 **Vulnerability Validation** capabilities
-- 🔄 **SQLMap Integration** for automated testing
-- 🔄 **Report Generation** for findings documentation
-- 🔄 **Multi-vulnerability Support** (XSS, CSRF, etc.)
+- 🚀 **HTTP Request Tool**: Actively interact with targets.
+- 🎯 **Vulnerability Validation**: Confirm and validate findings.
+- 🗺️ **SQLMap Integration**: Leverage automated testing capabilities.
+- 📝 **Report Generation**: Document findings for stakeholders.
+- 🌐 **Multi-Vulnerability Support**: Expand beyond SQLi to XSS, CSRF, and more.
+
+### 🗺️ Visual Roadmap
+
+Here’s a look at our development timeline and where we’re headed. We welcome your help in turning these plans into reality!
+
+```mermaid
+gantt
+    title AlgoBrain Development Roadmap
+    dateFormat  YYYY-MM-DD
+    section Foundation (Q3 2024)
+    Core Engine       :done, 2024-07-01, 30d
+    Frontend UI       :active, 2024-07-15, 30d
+    section V2 Features (Q4 2024)
+    HTTP Request Tool :2024-10-01, 30d
+    SQLMap Integration:2024-11-01, 45d
+    section V3+ (2025)
+    Report Generation :2025-01-15, 45d
+    Multi-Vulnerability Support :2025-03-01, 60d
+```
+
+## ✨ Contributors
+
+This project exists thanks to all the people who contribute. A huge thank you to everyone who has helped build and improve AlgoBrain!
+
+<a href="https://github.com/algorime/AlgoBrain/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=algorime/AlgoBrain" />
+</a>
+
+**Want to see your face here?** [Contribute today!](#-how-to-contribute)
 
 ## 🔒 Security Considerations
 
@@ -221,14 +320,32 @@ AlgoBrain/
 └── README.md             # This file
 ```
 
-## 🤝 Contributing
+## 🤝 How to Contribute
 
-We welcome contributions! Please see our [development guidelines](./CLAUDE.md) for detailed information about:
+We welcome contributions from everyone! Whether you're a developer, a security researcher, or a designer, you can help make AlgoBrain better. Here’s how you can get involved:
 
-- Local development setup
-- Code architecture and patterns
-- Testing procedures
-- Submission guidelines
+-   **🐛 Find and Report Bugs**: If you find a bug, please open an issue with a detailed description and steps to reproduce it.
+-   **💡 Suggest Enhancements**: Have an idea for a new feature or improvement? Let us know in the issues or discussions.
+-   **📝 Improve Documentation**: Help us make our documentation clearer and more comprehensive.
+-   **💻 Write Code**: Tackle an existing issue, add a new feature, or improve our test coverage.
+
+### Frontend Contributions
+
+We are actively looking for frontend developers to help us build a world-class user experience. Here are a few ways you can contribute:
+
+-   **✨ Improve UI/UX**: Help us design and implement a more intuitive and visually appealing interface.
+-   **🧩 Build New Components**: Create new React components for our chat, editor, and dashboard interfaces.
+-   **🎨 Enhance Styling**: Refine our Tailwind CSS and create a more consistent design system.
+-   **🧪 Add Tests**: Help us build out our testing suite with Vitest and Playwright.
+
+### Getting Started
+
+Ready to contribute? Check out our **[Technical Guide](./CLAUDE.md)** for detailed information on:
+
+-   **Local development setup**
+-   **Code architecture and patterns**
+-   **Testing procedures**
+-   **Submission guidelines**
 
 ## 📄 Documentation
 
