@@ -4,9 +4,6 @@ import type {
   HttpRequest,
   HttpResponse,
   PayloadSuggestion,
-  PayloadAnalysisResult,
-  InjectionPoint,
-  SimplifiedPayloadSuggestion
 } from '../../types';
 import Button from '../ui/Button';
 import api from '../../lib/api';
@@ -15,7 +12,6 @@ interface PayloadSuggestorChatProps {
   httpRequest: HttpRequest;
   httpResponse: HttpResponse;
   onPayloadSuggestions: (suggestions: PayloadSuggestion[]) => void;
-  onAnalysisResult: (result: PayloadAnalysisResult) => void;
   className?: string;
 }
 
@@ -23,7 +19,6 @@ const PayloadSuggestorChat: React.FC<PayloadSuggestorChatProps> = ({
   httpRequest,
   httpResponse,
   onPayloadSuggestions,
-  onAnalysisResult,
   className = ''
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -71,16 +66,9 @@ const PayloadSuggestorChat: React.FC<PayloadSuggestorChatProps> = ({
 
       const response = await api.post('/payload-suggestor/invoke/v2', requestBody);
 
-      const suggestions: SimplifiedPayloadSuggestion[] = response.data;
+      const suggestions: PayloadSuggestion[] = response.data;
       
-      const mappedSuggestions: PayloadSuggestion[] = suggestions.map(s => ({
-        ...s,
-        type: 'boolean_blind',
-        risk_level: 'medium',
-        applicable_points: [],
-      }));
-
-      onPayloadSuggestions(mappedSuggestions);
+      onPayloadSuggestions(suggestions);
 
       const agentMessage = `Found ${suggestions.length} potential payload suggestions.`;
       addMessage('assistant', agentMessage, 'vulnerability');

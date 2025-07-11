@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import type { SimplifiedPayloadSuggestion } from '../../types';
+import type { PayloadSuggestion } from '../../types';
 
 interface PayloadSuggestionPanelProps {
-  payloadSuggestions: SimplifiedPayloadSuggestion[];
-  onPayloadSelect: (payload: SimplifiedPayloadSuggestion) => void;
-  onPayloadDragStart: (payload: SimplifiedPayloadSuggestion, index: number) => void;
+  payloadSuggestions: PayloadSuggestion[];
+  onPayloadSelect: (payload: PayloadSuggestion) => void;
+  onPayloadDragStart: (payload: PayloadSuggestion, index: number) => void;
   className?: string;
 }
 

@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import type { PayloadSuggestion, InjectionPoint, PayloadAnalysisResult } from '../../types';
+import type { PayloadSuggestion } from '../../types';
+
+// Define the missing types locally
+interface InjectionPoint {
+  parameter: string;
+  // Add other properties of InjectionPoint if available and needed
+}
+
+interface PayloadAnalysisResult {
+  injection_points: InjectionPoint[];
+  vulnerability_indicators?: string[];
+  // Add other properties of PayloadAnalysisResult if available and needed
+}
 import Button from '../ui/Button';
 
 interface CompactPayloadListProps {
@@ -17,6 +29,7 @@ const CompactPayloadList: React.FC<CompactPayloadListProps> = ({
 }) => {
   const [copiedPayload, setCopiedPayload] = useState<string | null>(null);
   const [expandedPayload, setExpandedPayload] = useState<string | null>(null);
+  const [expandedSource, setExpandedSource] = useState<number | null>(null);
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -49,14 +62,14 @@ const CompactPayloadList: React.FC<CompactPayloadListProps> = ({
   };
 
   const handleApplyPayload = (payload: PayloadSuggestion) => {
-    // Find the most suitable injection point for this payload
-    const injectionPoint = analysisResult?.injection_points?.find(point => 
-      payload.applicable_points.includes(point.parameter)
-    ) || analysisResult?.injection_points?.[0];
-
+    const injectionPoint = analysisResult?.injection_points?.[0];
     if (injectionPoint) {
       onPayloadApply(payload, injectionPoint);
     }
+  };
+
+  const toggleSource = (index: number) => {
+    setExpandedSource(expandedSource === index ? null : index);
   };
 
   const truncatePayload = (payload: string, maxLength: number = 50) => {
@@ -64,17 +77,9 @@ const CompactPayloadList: React.FC<CompactPayloadListProps> = ({
   };
 
   const groupPayloadsByInjectionPoint = () => {
-    const groups: { [key: string]: PayloadSuggestion[] } = {};
-    
-    payloadSuggestions.forEach(payload => {
-      const key = payload.applicable_points[0] || 'general';
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-      groups[key].push(payload);
-    });
-
-    return groups;
+    return {
+      general: payloadSuggestions
+    };
   };
 
   const payloadGroups = groupPayloadsByInjectionPoint();
@@ -136,7 +141,7 @@ const CompactPayloadList: React.FC<CompactPayloadListProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <span className={`text-xs px-2 py-1 rounded text-white ${getTypeColor(payload.type)}`}>
-                        {payload.type.replace('_', ' ')}
+                        {payload.type ? payload.type.replace('_', ' ') : 'General'}
                       </span>
                       <span className={`text-xs px-2 py-1 rounded ${getRiskColor(payload.risk_level)}`}>
                         {payload.risk_level}
@@ -186,9 +191,28 @@ const CompactPayloadList: React.FC<CompactPayloadListProps> = ({
                     )}
                   </div>
                   
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-400 mb-2">
                     {payload.description}
                   </div>
+                  
+                  {payload.source && (
+                    <div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSource(index);
+                        }}
+                        className="text-xs text-blue-400 hover:underline focus:outline-none"
+                      >
+                        {expandedSource === index ? 'Hide' : 'Show'} Source
+                      </button>
+                      {expandedSource === index && (
+                        <div className="mt-2 p-2 bg-black/30 rounded text-xs text-gray-300 whitespace-pre-wrap">
+                          {payload.source}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   
                   {payload.expected_result && (
                     <div className="text-xs text-blue-400 mt-1">

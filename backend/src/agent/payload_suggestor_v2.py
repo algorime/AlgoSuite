@@ -30,17 +30,25 @@ class PayloadSuggestorV2:
         documents = self.knowledge_search.run(query=knowledge_query, limit=3)
 
         # Format documents for the prompt
-        formatted_documents = "\n".join([f"Document {i+1}:\n{doc['page_content']}\n" for i, doc in enumerate(documents)])
+        formatted_documents = "\n".join([f"Document {i}:\n{doc['page_content']}\n" for i, doc in enumerate(documents)])
+
+        # Optimize request payload
+        simplified_request = {
+            "method": http_request.get("method"),
+            "path": http_request.get("path"),
+            "headers": http_request.get("headers", {}),
+            "body": http_request.get("body", "")
+        }
 
         prompt = f"""
         Based on the following documents, please generate a list of relevant security testing payloads.
-        For each payload, provide a brief description and the source document.
+        For each payload, provide a brief description and the source document index.
 
         Documents:
         {formatted_documents}
 
         User message: {user_message}
-        HTTP Request: {json.dumps(http_request, indent=2)}
+        HTTP Request: {json.dumps(simplified_request, indent=2)}
         Database type: {db_type}
 
         Please return the suggestions in the following JSON format:
@@ -48,7 +56,7 @@ class PayloadSuggestorV2:
             {{
                 "payload": "payload string",
                 "description": "brief description",
-                "source": "content of the source document"
+                "source_index": "index of the source document (e.g., 0, 1, 2)"
             }}
         ]
         """
@@ -68,9 +76,19 @@ class PayloadSuggestorV2:
             
             suggestions = json.loads(json_str)
             # Ensure the source is correctly associated
-            for i, suggestion in enumerate(suggestions):
-                if i < len(documents):
-                    suggestion['source'] = documents[i]['page_content']
+            for suggestion in suggestions:
+                source_index = suggestion.get("source_index")
+                if source_index is not None:
+                    try:
+                        source_index = int(source_index)
+                        if 0 <= source_index < len(documents):
+                            suggestion['source'] = documents[source_index]['page_content']
+                        else:
+                            suggestion['source'] = "Source not found"
+                    except (ValueError, TypeError):
+                        suggestion['source'] = "Source not found"
+                else:
+                    suggestion['source'] = "Source not found"
         except (json.JSONDecodeError, IndexError):
             suggestions = []
 
