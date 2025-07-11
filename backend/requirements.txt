@@ -1,0 +1,10 @@
+langgraph
+langserve
+fastapi
+uvicorn
+qdrant-client
+google-api-python-client
+google-search-results
+python-dotenv
+langchain-google-genai
+sse_starlette
