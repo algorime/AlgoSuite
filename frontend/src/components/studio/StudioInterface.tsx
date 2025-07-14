@@ -9,6 +9,8 @@ import type {
   PayloadApplicatorResult
 } from '../../types';
 import PayloadSuggestionPanel from './PayloadSuggestionPanel';
+import SavedPayloadsPanel from './SavedPayloadsPanel';
+import Button from '../ui/Button';
 import PayloadApplicator from '../../services/PayloadApplicator';
 import './StudioInterface.css';
 
@@ -43,6 +45,8 @@ const StudioInterface: React.FC<StudioInterfaceProps> = ({ className = '' }) => 
   const [applicationResult, setApplicationResult] = useState<PayloadApplicatorResult | null>(null);
 
   // UI State
+  const [savedPayloads, setSavedPayloads] = useState<PayloadSuggestion[]>([]);
+  const [isSavedPayloadsOpen, setIsSavedPayloadsOpen] = useState(false);
   const [requestTextValue, setRequestTextValue] = useState('');
   const [isManualEditing, setIsManualEditing] = useState(false);
   const [parseTimeoutId, setParseTimeoutId] = useState<number | null>(null);
@@ -66,6 +70,22 @@ const StudioInterface: React.FC<StudioInterfaceProps> = ({ className = '' }) => 
       }
     } catch (error) {
       console.error('Error applying payload:', error);
+    }
+  };
+
+  const handlePayloadSave = (payload: PayloadSuggestion) => {
+    setSavedPayloads(prev => [...prev, payload]);
+  };
+
+  const handlePayloadUnsave = (payload: PayloadSuggestion) => {
+    setSavedPayloads(prev => prev.filter(p => p.payload !== payload.payload));
+  };
+
+  const handleCopyPayload = async (payload: string) => {
+    try {
+      await navigator.clipboard.writeText(payload);
+    } catch (err) {
+      console.error('Failed to copy payload:', err);
     }
   };
 
@@ -298,12 +318,22 @@ const StudioInterface: React.FC<StudioInterfaceProps> = ({ className = '' }) => 
                   httpRequest={httpRequest}
                   httpResponse={httpResponse}
                   onPayloadApply={handlePayloadApply}
+                  onPayloadSave={handlePayloadSave}
                   className="h-full"
                 />
               </div>
             </Panel>
           </PanelGroup>
         </div>
+        {isSavedPayloadsOpen && (
+          <SavedPayloadsPanel
+            savedPayloads={savedPayloads}
+            onUnsave={handlePayloadUnsave}
+            onCopy={handleCopyPayload}
+            onClose={() => setIsSavedPayloadsOpen(false)}
+            className="w-1/3"
+          />
+        )}
       </div>
 
       {/* Status Bar */}
@@ -324,6 +354,9 @@ const StudioInterface: React.FC<StudioInterfaceProps> = ({ className = '' }) => 
           </span>
         </div>
         <div className="flex items-center space-x-4">
+          <Button size="sm" variant="outline" onClick={() => setIsSavedPayloadsOpen(true)}>
+            Saved Payloads ({savedPayloads.length})
+          </Button>
           <span className="text-xs">
             {applicationResult ? `Last applied: ${applicationResult.applied_payload.payload.type}` : 'No payload applied'}
           </span>

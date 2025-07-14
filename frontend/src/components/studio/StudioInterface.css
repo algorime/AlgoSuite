@@ -1,2 +1,25 @@
-/* The new library 'react-resizable-panels' does not require custom CSS for basic functionality. */
-/* Styles are now handled by Tailwind CSS classes directly in the component. */
+.resizable-panel-group {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.resizable-panel {
+  overflow: auto;
+}
+
+.resizable-handle {
+  background-color: #374151;
+  z-index: 10;
+}
+
+.resizable-handle[data-orientation="horizontal"] {
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.resizable-handle[data-orientation="vertical"] {
+  width: 4px;
+  cursor: ew-resize;
+}

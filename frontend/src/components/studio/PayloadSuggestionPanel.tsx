@@ -14,6 +14,7 @@ interface PayloadSuggestionPanelProps {
   httpRequest: HttpRequest;
   httpResponse: HttpResponse;
   onPayloadApply: (payload: PayloadSuggestion, injectionPoint: InjectionPoint) => void;
+  onPayloadSave: (payload: PayloadSuggestion) => void;
   className?: string;
 }
 
@@ -21,6 +22,7 @@ const PayloadSuggestionPanel: React.FC<PayloadSuggestionPanelProps> = ({
   httpRequest,
   httpResponse,
   onPayloadApply,
+  onPayloadSave,
   className = ''
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,6 +42,20 @@ const PayloadSuggestionPanel: React.FC<PayloadSuggestionPanelProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    addMessage('assistant', 'Here is a sample payload to get you started:');
+    setPayloadSuggestions([
+      {
+        payload: "' OR 1=1 --",
+        type: 'boolean_blind',
+        risk_level: 'high',
+        description: 'A simple boolean-based blind SQL injection payload.',
+        source: 'Manual',
+        expected_result: 'The query should return true, potentially bypassing authentication or returning all records.'
+      }
+    ]);
+  }, []);
 
   const addMessage = (role: 'user' | 'assistant', content: string, type?: 'text' | 'code' | 'vulnerability') => {
     const newMessage: Message = {
@@ -211,12 +227,11 @@ const PayloadSuggestionPanel: React.FC<PayloadSuggestionPanelProps> = ({
                 </button>
                 <Button
                   size="sm"
-                  variant="primary"
-                  onClick={() => handleApplyPayload(payload)}
-                  disabled={!analysisResult?.injection_points?.length}
+                  variant="secondary"
+                  onClick={() => onPayloadSave(payload)}
                   className="text-xs px-2 py-1"
                 >
-                  Apply
+                  Save
                 </Button>
               </div>
             </div>
