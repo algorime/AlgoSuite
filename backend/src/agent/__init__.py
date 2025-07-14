@@ -11,6 +11,6 @@ This module assembles the agent from its components:
 from .graph import agent
 from .model import model
 from .prompt import SYSTEM_MESSAGE
-from .payload_suggestor import payload_suggestor_agent
+from .payload_suggestor_agent import PayloadSuggestorAgent
 
-__all__ = ["agent", "model", "SYSTEM_MESSAGE", "payload_suggestor_agent"]
+__all__ = ["agent", "model", "SYSTEM_MESSAGE", "PayloadSuggestorAgent"]

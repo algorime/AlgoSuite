@@ -1,3 +1,4 @@
+import logging
 from typing import List, Dict, Any
 from qdrant_client import QdrantClient, grpc
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -6,6 +7,8 @@ from src.config import Settings
 from src.tools.base import BaseTool
 from src.exceptions import KnowledgeSearchError
 
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 class KnowledgeSearchTool(BaseTool):
     """
@@ -54,17 +57,25 @@ class KnowledgeSearchTool(BaseTool):
         Returns:
             A list of the top search results.
         """
+        log.info(f"Performing knowledge search with query: '{query}' and limit: {limit}")
         try:
             query_vector = self.embeddings.embed_query(query)
+            log.info(f"Successfully generated embeddings for query.")
+
             search_result = self.client.search(
                 collection_name=self.settings.COLLECTION_NAME,
                 query_vector=query_vector,
                 limit=limit,
             )
+            log.info(f"Found {len(search_result)} results from Qdrant.")
 
-            return [hit.payload for hit in search_result]
+            results = [hit.payload for hit in search_result]
+            log.debug(f"Search results: {results}")
+            return results
 
         except (grpc.RpcError, ValueError) as e:
+            log.error(f"An error occurred during Qdrant search: {e}")
             raise KnowledgeSearchError(f"An error occurred during Qdrant search: {e}")
         except Exception as e:
+            log.error(f"An unexpected error occurred during knowledge search: {e}")
             raise KnowledgeSearchError(f"An unexpected error occurred: {e}")

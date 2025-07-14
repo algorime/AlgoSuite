@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 from .agent import agent
 from .agent.payload_suggestor_v2 import PayloadSuggestorV2
+from .agent.payload_suggestor_agent import PayloadSuggestorAgent
 from .config import settings
 
 app = FastAPI(
@@ -31,8 +32,19 @@ add_routes(
     enable_public_trace_link_endpoint=True,
 )
 
-
+# Initialize agents
 payload_suggestor_v2_agent = PayloadSuggestorV2()
+payload_suggestor_agent = PayloadSuggestorAgent()
+
+# Add LangServe routes for payload suggestor agent
+add_routes(
+    app,
+    payload_suggestor_agent.compiled_agent,
+    path="/payload-suggestor",
+    playground_type="default",
+    enable_feedback_endpoint=True,
+    enable_public_trace_link_endpoint=True,
+)
 
 @app.get("/")
 async def health_check():
@@ -40,6 +52,15 @@ async def health_check():
 @app.post("/payload-suggestor/invoke/v2")
 async def payload_suggestor_invoke_v2(request: dict):
     return await payload_suggestor_v2_agent.ainvoke({
+        "request": request.get("request"),
+        "user_message": request.get("user_message"),
+        "db_type": request.get("db_type"),
+    })
+
+@app.post("/payload-suggestor/invoke")
+async def payload_suggestor_invoke(request: dict):
+    """New tool-based payload suggestor endpoint."""
+    return await payload_suggestor_agent.ainvoke({
         "request": request.get("request"),
         "user_message": request.get("user_message"),
         "db_type": request.get("db_type"),

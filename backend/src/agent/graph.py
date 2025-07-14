@@ -32,7 +32,7 @@ try:
     tools.append(Tool(
         name="knowledge_search",
         func=knowledge_search_tool.run,
-        description="Performs a knowledge search.",
+        description="Searches the security knowledge database for relevant SQL injection techniques, payloads, and vulnerability information. Takes a query string and optional limit parameter.",
     ))
 except Exception as e:
     print(f"Warning: Knowledge Search Tool not available: {e}")
@@ -66,8 +66,8 @@ def call_model(state):
     if not messages or not isinstance(messages[0], SystemMessage):
         messages = [SYSTEM_MESSAGE] + messages
     
-    # Explicitly enable parallel tool calls (default behavior, but made explicit)
-    model_with_tools = model.bind_tools(tools, parallel_tool_calls=True)
+    # Bind tools to the model (parallel execution handled by ToolNode)
+    model_with_tools = model.bind_tools(tools)
     response = model_with_tools.invoke(messages)
     return {"messages": [response]}
 
