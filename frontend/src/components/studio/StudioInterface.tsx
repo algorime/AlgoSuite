@@ -8,8 +8,7 @@ import type {
   InjectionPoint,
   PayloadApplicatorResult
 } from '../../types';
-import PayloadSuggestorChat from './PayloadSuggestorChat';
-import CompactPayloadList from './CompactPayloadList';
+import PayloadSuggestionPanel from './PayloadSuggestionPanel';
 import PayloadApplicator from '../../services/PayloadApplicator';
 import './StudioInterface.css';
 
@@ -50,14 +49,6 @@ const StudioInterface: React.FC<StudioInterfaceProps> = ({ className = '' }) => 
   const [lastParsedValue, setLastParsedValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Event Handlers
-  const handlePayloadSuggestions = (suggestions: PayloadSuggestion[]) => {
-    setPayloadSuggestions(suggestions);
-  };
-
-  const handleAnalysisResult = (result: PayloadAnalysisResult) => {
-    setAnalysisResult(result);
-  };
 
   const handlePayloadApply = async (payload: PayloadSuggestion, injectionPoint: InjectionPoint) => {
     try {
@@ -300,31 +291,12 @@ const StudioInterface: React.FC<StudioInterfaceProps> = ({ className = '' }) => 
               </div>
             </PanelResizeHandle>
 
-            {/* Chat Panel */}
-            <Panel defaultSize={35} minSize={25}>
-              <div className="h-full mr-2 ml-2">
-                <PayloadSuggestorChat
+            {/* Payload Suggestion Panel */}
+            <Panel defaultSize={65} minSize={45}>
+              <div className="h-full ml-2">
+                <PayloadSuggestionPanel
                   httpRequest={httpRequest}
                   httpResponse={httpResponse}
-                  onPayloadSuggestions={handlePayloadSuggestions}
-                  onAnalysisResult={handleAnalysisResult}
-                  className="h-full"
-                />
-              </div>
-            </Panel>
-
-            <PanelResizeHandle>
-              <div className="w-3 h-full flex items-center justify-center cursor-col-resize group">
-                <div className="w-1 h-10 bg-gray-600 rounded-full group-hover:bg-blue-500 transition-colors"></div>
-              </div>
-            </PanelResizeHandle>
-
-            {/* Payload Suggestions Panel */}
-            <Panel defaultSize={30} minSize={20}>
-              <div className="h-full ml-2">
-                <CompactPayloadList
-                  payloadSuggestions={payloadSuggestions}
-                  analysisResult={analysisResult}
                   onPayloadApply={handlePayloadApply}
                   className="h-full"
                 />

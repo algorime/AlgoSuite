@@ -67,6 +67,16 @@ export interface PayloadSuggestion {
   risk_level: string;
   expected_result?: string;
 }
+export interface InjectionPoint {
+  parameter: string;
+  // Add other properties of InjectionPoint if available and needed
+}
+
+export interface PayloadAnalysisResult {
+  injection_points: InjectionPoint[];
+  vulnerability_indicators?: string[];
+  // Add other properties of PayloadAnalysisResult if available and needed
+}
 
 // Payload Suggestor Agent Types
 export interface PayloadSuggestorRequest {
