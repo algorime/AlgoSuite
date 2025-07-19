@@ -1,5 +1,66 @@
 @import "tailwindcss";
 
+/* CSS Custom Properties for Theme System */
+:root {
+  /* Colors will be set dynamically by ThemeProvider */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  
+  --color-island-bg: #ffffff;
+  --color-island-border: #e2e8f0;
+  --color-island-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-accent: #3b82f6;
+  
+  --color-interactive-primary: #3b82f6;
+  --color-interactive-secondary: #64748b;
+  --color-interactive-hover: #2563eb;
+  --color-interactive-active: #1d4ed8;
+  
+  --spacing-island-padding: 1.5rem;
+  --spacing-island-margin: 1rem;
+  --spacing-island-gap: 1rem;
+  
+  --border-radius-island: 0.75rem;
+  --border-radius-button: 0.5rem;
+  --border-radius-input: 0.375rem;
+  
+  --shadow-low: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-high: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Animation properties */
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 300ms;
+  --transition-duration-slow: 500ms;
+  --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --transition-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --transition-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Transition presets */
+  --transition-island: all var(--transition-duration-normal) var(--transition-easing);
+  --transition-theme: background-color var(--transition-duration-slow) var(--transition-easing), 
+                      border-color var(--transition-duration-slow) var(--transition-easing), 
+                      color var(--transition-duration-slow) var(--transition-easing), 
+                      box-shadow var(--transition-duration-slow) var(--transition-easing);
+  --transition-hover: all var(--transition-duration-fast) var(--transition-easing);
+  --transition-elevation: box-shadow var(--transition-duration-normal) var(--transition-easing-out), 
+                          transform var(--transition-duration-normal) var(--transition-easing-out);
+}
+
+/* Dark theme overrides will be applied via JavaScript */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -8,9 +69,214 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   min-height: 100vh;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-duration-normal) var(--transition-easing),
+              color var(--transition-duration-normal) var(--transition-easing);
 }
 
 code {
   font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Animation keyframes */
+@keyframes island-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes island-disappear {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+@keyframes theme-switch {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Base island styles */
+.island {
+  background: var(--color-island-bg);
+  border: 1px solid var(--color-island-border);
+  border-radius: var(--border-radius-island);
+  box-shadow: var(--shadow-medium);
+  padding: var(--spacing-island-padding);
+  transition: var(--transition-elevation);
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.island:hover {
+  box-shadow: var(--shadow-high);
+  transform: translateY(-2px) translateZ(0);
+}
+
+/* Island elevation variants */
+.island-elevation-none {
+  box-shadow: none;
+}
+
+.island-elevation-none:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.island-elevation-low {
+  box-shadow: var(--shadow-low);
+}
+
+.island-elevation-low:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.15), 0 2px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px) translateZ(0);
+}
+
+.island-elevation-medium {
+  box-shadow: var(--shadow-medium);
+}
+
+.island-elevation-medium:hover {
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2), 0 4px 10px -2px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px) translateZ(0);
+}
+
+.island-elevation-high {
+  box-shadow: var(--shadow-high);
+}
+
+.island-elevation-high:hover {
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -4px rgba(0, 0, 0, 0.2);
+  transform: translateY(-6px) translateZ(0);
+}
+
+/* Island variant styles */
+.island-variant-primary {
+  /* Styles applied via JavaScript for theme consistency */
+}
+
+.island-variant-secondary {
+  /* Styles applied via JavaScript for theme consistency */
+}
+
+.island-variant-accent {
+  /* Styles applied via JavaScript for theme consistency */
+}
+
+.island-variant-danger {
+  /* Styles applied via JavaScript for theme consistency */
+}
+
+/* Island size variants */
+.island-size-sm {
+  /* Padding applied via JavaScript for consistency */
+}
+
+.island-size-md {
+  /* Padding applied via JavaScript for consistency */
+}
+
+.island-size-lg {
+  /* Padding applied via JavaScript for consistency */
+}
+
+.island-size-xl {
+  /* Padding applied via JavaScript for consistency */
+}
+
+/* Island appearance animations */
+.island-appear {
+  animation: island-appear var(--transition-duration-normal) var(--transition-easing-out) forwards;
+}
+
+.island-disappear {
+  animation: island-disappear var(--transition-duration-normal) var(--transition-easing-in) forwards;
+}
+
+/* Theme transition animations */
+.theme-switching {
+  animation: theme-switch var(--transition-duration-slow) var(--transition-easing);
+}
+
+/* Interactive element animations */
+.interactive-hover {
+  transition: var(--transition-hover);
+  cursor: pointer;
+}
+
+.interactive-hover:hover {
+  transform: scale(1.02) translateZ(0);
+}
+
+.interactive-hover:active {
+  transform: scale(0.98) translateZ(0);
+}
+
+/* Button-specific animations */
+.button-island {
+  transition: var(--transition-hover);
+  transform: translateZ(0);
+}
+
+.button-island:hover {
+  transform: translateY(-1px) translateZ(0);
+  box-shadow: var(--shadow-medium);
+}
+
+.button-island:active {
+  transform: translateY(0) translateZ(0);
+  box-shadow: var(--shadow-low);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .mobile\:p-3 { padding: 0.75rem !important; }
+  .mobile\:p-6 { padding: 1.5rem !important; }
+  .mobile\:p-8 { padding: 2rem !important; }
+  .mobile\:p-12 { padding: 3rem !important; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet\:p-3 { padding: 0.75rem !important; }
+  .tablet\:p-6 { padding: 1.5rem !important; }
+  .tablet\:p-8 { padding: 2rem !important; }
+  .tablet\:p-12 { padding: 3rem !important; }
+}
+
+@media (min-width: 1025px) {
+  .desktop\:p-3 { padding: 0.75rem !important; }
+  .desktop\:p-6 { padding: 1.5rem !important; }
+  .desktop\:p-8 { padding: 2rem !important; }
+  .desktop\:p-12 { padding: 3rem !important; }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .island:hover {
+    transform: none;
+  }
 }
