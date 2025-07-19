@@ -65,25 +65,25 @@ export const lightThemeConfig: Omit<ThemeConfig, 'mode'> = {
 export const darkThemeConfig: Omit<ThemeConfig, 'mode'> = {
   colors: {
     background: {
-      primary: '#0f172a',
-      secondary: '#1e293b',
-      gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+      primary: '#18191B',
+      secondary: '#252629',
+      gradient: 'linear-gradient(135deg, #18191B 0%, #252629 100%)',
     },
     island: {
-      background: '#1e293b',
-      border: '#334155',
+      background: '#252629',
+      border: '#323438',
       shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
     },
     text: {
-      primary: '#f1f5f9',
-      secondary: '#94a3b8',
-      accent: '#60a5fa',
+      primary: '#F8F8F9',
+      secondary: '#898E94',
+      accent: '#2A7DEB',
     },
     interactive: {
-      primary: '#3b82f6',
-      secondary: '#64748b',
-      hover: '#60a5fa',
-      active: '#93c5fd',
+      primary: '#2A7DEB',
+      secondary: '#6E747B',
+      hover: '#4B8DEC',
+      active: '#71A3EF',
     },
   },
   spacing: {
