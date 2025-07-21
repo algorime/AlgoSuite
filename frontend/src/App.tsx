@@ -13,7 +13,7 @@ import { useTheme } from './hooks/useTheme.js';
 
 // Main app component with tab-based navigation
 function MainApp() {
-  const [activeTab, setActiveTab] = useState<NavigationTab>('islands');
+  const [activeTab, setActiveTab] = useState<NavigationTab>('local-studio');
 
   return (
     <div 
@@ -57,6 +57,11 @@ function MainApp() {
             </div>
           )}
           
+          {activeTab === 'local-studio' && (
+            <div className="max-w-full mx-auto h-[calc(100vh-8rem)] content-island-container">
+              <StudioIslandWrapper className="h-full" />
+            </div>
+          )}
           
           {activeTab === 'animations' && (
             <div className="content-island-container">

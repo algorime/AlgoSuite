@@ -4,7 +4,7 @@ import { Island } from './Island.js';
 import ThemeSwitcher from './ThemeSwitcher.js';
 import { useAnimation } from '../../hooks/useAnimation.js';
 
-export type NavigationTab = 'chat' | 'editor' | 'dashboard' | 'studio' | 'animations' | 'islands' | 'buttons';
+export type NavigationTab = 'chat' | 'editor' | 'dashboard' | 'studio' | 'local-studio' | 'animations' | 'islands' | 'buttons';
 
 export interface NavigationIslandProps {
   activeTab: NavigationTab;
@@ -25,6 +25,7 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
     { key: 'editor', label: 'Payload Editor' },
     { key: 'dashboard', label: 'Dashboard' },
     { key: 'studio', label: 'Studio' },
+    { key: 'local-studio', label: 'Local Studio' },
     { key: 'animations', label: 'Animations' },
     { key: 'islands', label: 'Islands' },
     { key: 'buttons', label: 'Buttons' },
@@ -33,6 +34,11 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
   const handleTabClick = (tab: NavigationTab) => {
     if (tab === 'studio') {
       navigate('/studio');
+    } else if (tab === 'local-studio') {
+      onTabChange(tab);
+      if (location.pathname !== '/') {
+        navigate('/');
+      }
     } else {
       onTabChange(tab);
     }
@@ -47,8 +53,12 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
   const isStudioPage = location.pathname === '/studio';
   
   const getIsActive = (tab: NavigationTab): boolean => {
+    const isStudioPage = location.pathname === '/studio';
     if (tab === 'studio') {
       return isStudioPage;
+    }
+    if (tab === 'local-studio') {
+      return location.pathname === '/';
     }
     return !isStudioPage && activeTab === tab;
   };
