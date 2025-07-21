@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import StudioIslandWrapper from './components/studio/StudioIslandWrapper';
 import ChatIslandWrapper from './components/chat/ChatIslandWrapper';
 import EditorIslandWrapper from './components/editor/EditorIslandWrapper';
@@ -7,11 +8,12 @@ import AnimationDemo from './components/ui/AnimationDemo';
 import { IslandDemo } from './components/ui/IslandDemo';
 import ButtonDemo from './components/ui/ButtonDemo';
 import NavigationIsland, { type NavigationTab } from './components/ui/NavigationIsland';
+import StudioPage from './components/pages/StudioPage';
 import { useTheme } from './hooks/useTheme.js';
 
-function App() {
+// Main app component with tab-based navigation
+function MainApp() {
   const [activeTab, setActiveTab] = useState<NavigationTab>('islands');
-  const { } = useTheme();
 
   return (
     <div 
@@ -55,11 +57,6 @@ function App() {
             </div>
           )}
           
-          {activeTab === 'studio' && (
-            <div className="h-full content-island-container">
-              <StudioIslandWrapper className="h-full" />
-            </div>
-          )}
           
           {activeTab === 'animations' && (
             <div className="content-island-container">
@@ -81,6 +78,17 @@ function App() {
         </div>
       </main>
     </div>
+  );
+}
+
+function App() {
+  const { } = useTheme();
+
+  return (
+    <Routes>
+      <Route path="/" element={<MainApp />} />
+      <Route path="/studio" element={<StudioPage />} />
+    </Routes>
   );
 }
 

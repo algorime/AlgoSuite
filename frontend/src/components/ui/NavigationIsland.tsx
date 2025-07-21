@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Island } from './Island.js';
 import ThemeSwitcher from './ThemeSwitcher.js';
 import { useAnimation } from '../../hooks/useAnimation.js';
@@ -16,6 +17,8 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { createTransition, reducedMotion } = useAnimation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const navigationItems: { key: NavigationTab; label: string }[] = [
     { key: 'chat', label: 'Chat' },
@@ -28,12 +31,26 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
   ];
 
   const handleTabClick = (tab: NavigationTab) => {
-    onTabChange(tab);
+    if (tab === 'studio') {
+      navigate('/studio');
+    } else {
+      onTabChange(tab);
+    }
     setIsMobileMenuOpen(false); // Close mobile menu when tab is selected
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Check if we're on the studio page route
+  const isStudioPage = location.pathname === '/studio';
+  
+  const getIsActive = (tab: NavigationTab): boolean => {
+    if (tab === 'studio') {
+      return isStudioPage;
+    }
+    return !isStudioPage && activeTab === tab;
   };
 
   const navButtonStyles = (isActive: boolean): React.CSSProperties => ({
@@ -89,7 +106,11 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
         <div className="flex h-12 items-center justify-between">
           {/* Logo and Brand */}
           <div className="flex items-center">
-            <a className="flex items-center space-x-2" href="/">
+            <button 
+              className="flex items-center space-x-2 interactive-hover" 
+              onClick={() => navigate('/')}
+              aria-label="Navigate to homepage"
+            >
               <div 
                 className="h-6 w-6 rounded" 
                 style={{ 
@@ -106,31 +127,34 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
               >
                 AlgoBrain
               </span>
-            </a>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            {navigationItems.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => handleTabClick(item.key)}
-                className="text-sm font-medium transition-colors interactive-hover"
-                style={navButtonStyles(activeTab === item.key)}
-                onMouseEnter={(e) => {
-                  if (activeTab !== item.key) {
-                    e.currentTarget.style.color = 'var(--color-interactive-hover)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== item.key) {
-                    e.currentTarget.style.color = 'var(--color-text-secondary)';
-                  }
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
+            {navigationItems.map((item) => {
+              const isActive = getIsActive(item.key);
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => handleTabClick(item.key)}
+                  className="text-sm font-medium transition-colors interactive-hover"
+                  style={navButtonStyles(isActive)}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.color = 'var(--color-interactive-hover)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.color = 'var(--color-text-secondary)';
+                    }
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
           </nav>
 
           {/* Right Side - Theme Switcher and Mobile Menu */}
@@ -189,24 +213,27 @@ const NavigationIsland: React.FC<NavigationIslandProps> = ({
           }}
         >
           <nav className="flex flex-col space-y-2">
-            {navigationItems.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => handleTabClick(item.key)}
-                className="text-left px-3 py-2 text-sm font-medium rounded transition-colors interactive-hover"
-                style={{
-                  color: activeTab === item.key 
-                    ? 'var(--color-text-accent)' 
-                    : 'var(--color-text-secondary)',
-                  backgroundColor: activeTab === item.key 
-                    ? 'var(--color-interactive-primary)20' 
-                    : 'transparent',
-                  transition: createTransition(['color', 'background-color'], 'fast'),
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
+            {navigationItems.map((item) => {
+              const isActive = getIsActive(item.key);
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => handleTabClick(item.key)}
+                  className="text-left px-3 py-2 text-sm font-medium rounded transition-colors interactive-hover"
+                  style={{
+                    color: isActive 
+                      ? 'var(--color-text-accent)' 
+                      : 'var(--color-text-secondary)',
+                    backgroundColor: isActive 
+                      ? 'var(--color-interactive-primary)20' 
+                      : 'transparent',
+                    transition: createTransition(['color', 'background-color'], 'fast'),
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
           </nav>
         </Island>
       </div>

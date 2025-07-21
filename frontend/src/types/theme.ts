@@ -24,11 +24,35 @@ export interface ThemeColors {
   };
 }
 
+export interface ResponsiveSpacing {
+  padding: string;
+  margin: string;
+  gap: string;
+}
+
 export interface ThemeSpacing {
   island: {
     padding: string;
     margin: string;
     gap: string;
+  };
+  responsive: {
+    mobile: ResponsiveSpacing;
+    tablet: ResponsiveSpacing;
+    desktop: ResponsiveSpacing;
+  };
+}
+
+export interface ThemeBreakpoints {
+  mobile: string;
+  tablet: string;
+  desktop: string;
+  wide: string;
+  containerQueries: {
+    small: string;
+    medium: string;
+    large: string;
+    xlarge: string;
   };
 }
 
@@ -68,6 +92,7 @@ export interface ThemeConfig {
   mode: ThemeMode;
   colors: ThemeColors;
   spacing: ThemeSpacing;
+  breakpoints: ThemeBreakpoints;
   borderRadius: ThemeBorderRadius;
   shadows: ThemeShadows;
   animations: ThemeAnimations;

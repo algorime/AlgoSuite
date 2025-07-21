@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { useTheme } from '../../hooks/useTheme.js';
+import { useResponsive, getResponsiveSpacing } from '../../hooks/useResponsive.js';
 
 export type IslandContainerLayout = 'default' | 'grid' | 'flex' | 'masonry';
 export type IslandContainerSpacing = 'tight' | 'normal' | 'loose' | 'custom';
@@ -57,6 +58,7 @@ const IslandContainer = forwardRef<HTMLDivElement, IslandContainerProps>(({
   ...props
 }, ref) => {
   const { config } = useTheme();
+  const responsiveState = useResponsive();
 
   // Generate spacing styles
   const getSpacingValue = (): string => {
@@ -76,30 +78,45 @@ const IslandContainer = forwardRef<HTMLDivElement, IslandContainerProps>(({
     }
   };
 
-  // Generate layout-specific styles
+  // Generate layout-specific styles with responsive considerations
   const getLayoutStyles = (): React.CSSProperties => {
     const spacingValue = getSpacingValue();
 
+    // Use responsive gap if available
+    const finalGap = grid?.gap?.[responsiveState.breakpoint as keyof typeof grid.gap] || spacingValue;
+
     switch (layout) {
       case 'grid':
+        // Determine grid columns based on current breakpoint
+        let columns = 'repeat(auto-fit, minmax(300px, 1fr))';
+        if (grid?.columns) {
+          const currentColumns = grid.columns[responsiveState.breakpoint as keyof typeof grid.columns] || 
+                               grid.columns.desktop || 
+                               (responsiveState.isMobile ? 1 : responsiveState.isTablet ? 2 : 3);
+          columns = `repeat(${currentColumns}, 1fr)`;
+        }
+
         return {
           display: 'grid',
-          gap: spacingValue,
-          gridTemplateColumns: grid?.columns?.desktop 
-            ? `repeat(${grid.columns.desktop}, 1fr)` 
-            : 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: finalGap,
+          gridTemplateColumns: columns,
         };
       case 'flex':
         return {
           display: 'flex',
           flexWrap: 'wrap',
-          gap: spacingValue,
+          gap: finalGap,
+          alignItems: 'flex-start',
         };
       case 'masonry':
         return {
           display: 'grid',
-          gap: spacingValue,
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: finalGap,
+          gridTemplateColumns: responsiveState.isMobile 
+            ? '1fr' 
+            : responsiveState.isTablet 
+              ? 'repeat(2, 1fr)' 
+              : 'repeat(auto-fit, minmax(300px, 1fr))',
           gridAutoRows: 'masonry', // Future CSS feature, fallback to grid
         };
       default:

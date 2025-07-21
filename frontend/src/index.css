@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-/* CSS Custom Properties for Theme System */
+/* CSS Custom Properties for Theme System with Fallbacks */
 :root {
   /* Colors will be set dynamically by ThemeProvider */
+  /* Fallback values for browsers without CSS custom properties support */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f8fafc;
   --color-bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
@@ -274,6 +275,99 @@ code {
   /* Gradient background applied via JavaScript */
 }
 
+/* Container Queries for Modern Responsive Design */
+@container (min-width: 320px) {
+  .container-queries .island-size-sm {
+    padding: 0.5rem;
+  }
+  .container-queries .island-size-md {
+    padding: 0.75rem;
+  }
+}
+
+@container (min-width: 480px) {
+  .container-queries .island-size-sm {
+    padding: 0.75rem;
+  }
+  .container-queries .island-size-md {
+    padding: 1rem;
+  }
+  .container-queries .island-size-lg {
+    padding: 1.5rem;
+  }
+}
+
+@container (min-width: 768px) {
+  .container-queries .island-size-md {
+    padding: 1.25rem;
+  }
+  .container-queries .island-size-lg {
+    padding: 2rem;
+  }
+  .container-queries .island-size-xl {
+    padding: 2.5rem;
+  }
+}
+
+@container (min-width: 1024px) {
+  .container-queries .island-size-lg {
+    padding: 2.5rem;
+  }
+  .container-queries .island-size-xl {
+    padding: 3rem;
+  }
+}
+
+/* Island Layout Variants */
+.island-layout-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.island-layout-spacious {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.island-layout-minimal {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Touch-Optimized Islands */
+.touch-optimized {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.touch-device .island:hover {
+  /* Disable hover effects on touch devices */
+  transform: translateZ(0);
+  box-shadow: var(--shadow-medium);
+}
+
+.touch-device .interactive-hover:hover {
+  transform: none;
+}
+
+.touch-device .interactive-hover:active {
+  transform: scale(0.98) translateZ(0);
+}
+
+/* Reduced Motion Support */
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.reduced-motion .island:hover {
+  transform: none;
+}
+
 /* Responsive Grid System */
 .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
 .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -343,4 +437,497 @@ code {
   .island:hover {
     transform: none;
   }
+}
+
+/* Accessibility Styles */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus indicators that work with island styling */
+.island:focus-visible {
+  outline: 2px solid var(--color-interactive-primary);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-medium), 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.island[data-interactive="true"]:focus-visible {
+  outline: 3px solid var(--color-interactive-primary);
+  outline-offset: 3px;
+  box-shadow: var(--shadow-high), 0 0 0 6px rgba(59, 130, 246, 0.15);
+}
+
+/* Focus state styling */
+.island[data-focused="true"] {
+  border-color: var(--color-interactive-primary);
+  box-shadow: var(--shadow-medium), 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Interactive island states */
+.island[data-interactive="true"] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.island[data-interactive="true"]:hover {
+  border-color: var(--color-interactive-hover);
+}
+
+.island[data-interactive="true"][aria-pressed="true"] {
+  transform: scale(0.98) translateZ(0);
+  box-shadow: var(--shadow-low);
+  border-color: var(--color-interactive-active);
+}
+
+/* High contrast mode support */
+.island[data-high-contrast="true"] {
+  border-width: 2px;
+  border-style: solid;
+}
+
+.island[data-high-contrast="true"]:focus-visible {
+  outline-width: 3px;
+  outline-style: solid;
+}
+
+/* Keyboard navigation improvements */
+.island[tabindex="0"]:focus-visible,
+.island[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--color-interactive-primary);
+  outline-offset: 2px;
+}
+
+/* Theme-specific accessibility adjustments */
+[data-theme="dark"] .island:focus-visible {
+  outline-color: #60a5fa; /* blue-400 for better contrast in dark mode */
+  box-shadow: var(--shadow-medium), 0 0 0 4px rgba(96, 165, 250, 0.15);
+}
+
+[data-theme="dark"] .island[data-interactive="true"]:focus-visible {
+  outline-color: #60a5fa;
+  box-shadow: var(--shadow-high), 0 0 0 6px rgba(96, 165, 250, 0.2);
+}
+
+[data-theme="dark"] .island[data-focused="true"] {
+  border-color: #60a5fa;
+  box-shadow: var(--shadow-medium), 0 0 0 2px rgba(96, 165, 250, 0.15);
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--color-interactive-primary);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Landmark region styling */
+.island[role="main"],
+.island[role="navigation"],
+.island[role="banner"],
+.island[role="contentinfo"],
+.island[role="complementary"],
+.island[role="region"] {
+  position: relative;
+}
+
+.island[role="main"]::before,
+.island[role="navigation"]::before,
+.island[role="banner"]::before,
+.island[role="contentinfo"]::before,
+.island[role="complementary"]::before,
+.island[role="region"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-interactive-primary);
+  border-radius: 2px 0 0 2px;
+  opacity: 0;
+  transition: opacity var(--transition-duration-fast) var(--transition-easing);
+}
+
+.island[role="main"]:focus-within::before,
+.island[role="navigation"]:focus-within::before,
+.island[role="banner"]:focus-within::before,
+.island[role="contentinfo"]:focus-within::before,
+.island[role="complementary"]:focus-within::before,
+.island[role="region"]:focus-within::before {
+  opacity: 1;
+}
+
+/* Announcement styles for screen readers */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Touch accessibility improvements */
+.touch-device .island[data-interactive="true"] {
+  min-height: 44px; /* Minimum touch target size */
+  min-width: 44px;
+}
+
+.touch-device .island[data-interactive="true"]:active {
+  background-color: var(--color-interactive-hover);
+  transition: background-color 0.1s ease;
+}
+
+/* Focus trap styling */
+.island[data-focus-trap="true"] {
+  isolation: isolate;
+}
+
+/* Error state styling for accessibility */
+.island[aria-invalid="true"] {
+  border-color: #dc2626; /* red-600 */
+  box-shadow: var(--shadow-medium), 0 0 0 2px rgba(220, 38, 38, 0.1);
+}
+
+.island[aria-invalid="true"]:focus-visible {
+  outline-color: #dc2626;
+  box-shadow: var(--shadow-medium), 0 0 0 4px rgba(220, 38, 38, 0.15);
+}
+
+/* Loading state accessibility */
+.island[aria-busy="true"] {
+  position: relative;
+  pointer-events: none;
+}
+
+.island[aria-busy="true"]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: inherit;
+  z-index: 1;
+}
+
+[data-theme="dark"] .island[aria-busy="true"]::after {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Disabled state accessibility */
+.island[aria-disabled="true"] {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.island[aria-disabled="true"]:focus-visible {
+  outline: 2px solid #9ca3af; /* gray-400 */
+  box-shadow: var(--shadow-low), 0 0 0 4px rgba(156, 163, 175, 0.1);
+}
+
+/* Error Boundary Styles */
+.error-boundary-fallback {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.error-boundary-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.error-boundary-icon {
+  flex-shrink: 0;
+  color: #dc2626; /* red-600 */
+  margin-top: 0.125rem;
+}
+
+.error-boundary-message {
+  flex: 1;
+  min-width: 0;
+}
+
+.error-boundary-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #dc2626; /* red-600 */
+}
+
+.error-boundary-description {
+  margin: 0 0 1rem 0;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.error-boundary-details {
+  margin: 1rem 0;
+  border: 1px solid var(--color-island-border);
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.error-boundary-details summary {
+  padding: 0.75rem;
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-island-border);
+}
+
+.error-boundary-details summary:hover {
+  background: var(--color-interactive-hover);
+  color: white;
+}
+
+.error-boundary-error-info {
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.error-boundary-stack,
+.error-boundary-component-stack pre {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-island-border);
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.error-boundary-actions {
+  margin-top: 1rem;
+}
+
+.error-boundary-retry-button {
+  background: var(--color-interactive-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-button);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-hover);
+}
+
+.error-boundary-retry-button:hover {
+  background: var(--color-interactive-hover);
+  transform: translateY(-1px);
+}
+
+.error-boundary-retry-button:active {
+  transform: translateY(0);
+}
+
+/* Island Error Fallback Styles */
+.island-error-fallback {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.island-error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.island-error-icon {
+  font-size: 1rem;
+}
+
+.island-error-text {
+  font-weight: 500;
+}
+
+/* Progressive Enhancement Fallbacks */
+/* These styles are applied when CSS custom properties are not supported */
+.no-cssCustomProperties body {
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.no-cssCustomProperties .island {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.no-cssCustomProperties .island-elevation-low {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.no-cssCustomProperties .island-elevation-high {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.no-cssCustomProperties .island:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.no-cssCustomProperties .error-boundary-title {
+  color: #dc2626;
+}
+
+.no-cssCustomProperties .error-boundary-icon {
+  color: #dc2626;
+}
+
+.no-cssCustomProperties .error-boundary-retry-button {
+  background: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+}
+
+.no-cssCustomProperties .error-boundary-retry-button:hover {
+  background: #2563eb;
+}
+
+/* Flexbox fallbacks */
+.no-flexbox .island-layout-compact,
+.no-flexbox .island-layout-spacious,
+.no-flexbox .island-layout-minimal {
+  display: block;
+}
+
+.no-flexbox .island-layout-compact > * {
+  margin-bottom: 0.5rem;
+}
+
+.no-flexbox .island-layout-spacious > * {
+  margin-bottom: 1rem;
+}
+
+.no-flexbox .island-layout-minimal > * {
+  margin-bottom: 0.25rem;
+}
+
+.no-flexbox .error-boundary-content {
+  display: block;
+}
+
+.no-flexbox .error-boundary-icon {
+  float: left;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.no-flexbox .error-boundary-message {
+  overflow: hidden;
+}
+
+/* CSS Grid fallbacks */
+.no-cssGrid .grid-cols-1,
+.no-cssGrid .grid-cols-2,
+.no-cssGrid .grid-cols-3,
+.no-cssGrid .grid-cols-4,
+.no-cssGrid .grid-cols-5,
+.no-cssGrid .grid-cols-6 {
+  display: block;
+}
+
+.no-cssGrid .grid-cols-2 > * {
+  width: 48%;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 2%;
+}
+
+.no-cssGrid .grid-cols-3 > * {
+  width: 31%;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 2%;
+}
+
+.no-cssGrid .grid-cols-4 > * {
+  width: 23%;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 2%;
+}
+
+/* Transitions fallbacks */
+.no-transitions .island,
+.no-transitions .island:hover,
+.no-transitions .interactive-hover,
+.no-transitions .button-island,
+.no-transitions .error-boundary-retry-button {
+  transition: none !important;
+}
+
+/* 3D Transforms fallbacks */
+.no-transforms3d .island:hover,
+.no-transforms3d .interactive-hover:hover,
+.no-transforms3d .button-island:hover,
+.no-transforms3d .error-boundary-retry-button:hover {
+  transform: none;
+}
+
+/* Container Queries fallbacks */
+.no-containerQueries .container-queries .island-size-sm {
+  padding: 0.75rem;
+}
+
+.no-containerQueries .container-queries .island-size-md {
+  padding: 1rem;
+}
+
+.no-containerQueries .container-queries .island-size-lg {
+  padding: 1.5rem;
+}
+
+.no-containerQueries .container-queries .island-size-xl {
+  padding: 2rem;
+}
+
+@media (max-width: 640px) {
+  .no-containerQueries .container-queries .island-size-sm { padding: 0.5rem; }
+  .no-containerQueries .container-queries .island-size-md { padding: 0.75rem; }
+  .no-containerQueries .container-queries .island-size-lg { padding: 1rem; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .no-containerQueries .container-queries .island-size-sm { padding: 0.75rem; }
+  .no-containerQueries .container-queries .island-size-md { padding: 1rem; }
+  .no-containerQueries .container-queries .island-size-lg { padding: 1.5rem; }
+}
+
+@media (min-width: 1025px) {
+  .no-containerQueries .container-queries .island-size-md { padding: 1.25rem; }
+  .no-containerQueries .container-queries .island-size-lg { padding: 2rem; }
+  .no-containerQueries .container-queries .island-size-xl { padding: 2.5rem; }
 }

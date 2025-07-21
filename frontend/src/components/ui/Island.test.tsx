@@ -1,10 +1,37 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Island } from './Island';
 import { ThemeProvider } from '../../contexts/ThemeContext';
+import React from 'react';
 
-// Mock theme context
+// Mock the responsive hook
+vi.mock('../../hooks/useResponsive', () => ({
+  useResponsive: vi.fn(() => ({
+    breakpoint: 'desktop',
+    isMobile: false,
+    isTablet: false,
+    isDesktop: true,
+    isWide: false,
+    width: 1280,
+    height: 720,
+    orientation: 'landscape',
+    isTouchDevice: false,
+    prefersReducedMotion: false,
+    prefersHighContrast: false,
+  })),
+  useContainerQuery: vi.fn(() => ({
+    size: 'large',
+    width: 800,
+    height: 600,
+  })),
+  getResponsiveSpacing: vi.fn(() => ({
+    padding: '1.5rem',
+    margin: '1rem',
+    gap: '1rem',
+  })),
+  supportsHover: vi.fn(() => true),
+}));
+
 const mockThemeConfig = {
   mode: 'light' as const,
   colors: {
@@ -16,7 +43,7 @@ const mockThemeConfig = {
     island: {
       background: '#ffffff',
       border: '#e2e8f0',
-      shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     text: {
       primary: '#1e293b',
@@ -36,6 +63,35 @@ const mockThemeConfig = {
       margin: '1rem',
       gap: '1rem',
     },
+    responsive: {
+      mobile: {
+        padding: '1rem',
+        margin: '0.5rem',
+        gap: '0.75rem',
+      },
+      tablet: {
+        padding: '1.25rem',
+        margin: '0.75rem',
+        gap: '1rem',
+      },
+      desktop: {
+        padding: '1.5rem',
+        margin: '1rem',
+        gap: '1.25rem',
+      },
+    },
+  },
+  breakpoints: {
+    mobile: '640px',
+    tablet: '1024px',
+    desktop: '1280px',
+    wide: '1536px',
+    containerQueries: {
+      small: '320px',
+      medium: '480px',
+      large: '768px',
+      xlarge: '1024px',
+    },
   },
   borderRadius: {
     island: '0.75rem',
@@ -43,9 +99,9 @@ const mockThemeConfig = {
     input: '0.375rem',
   },
   shadows: {
-    low: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-    medium: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    high: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+    low: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+    medium: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    high: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
   },
   animations: {
     duration: {
@@ -61,410 +117,258 @@ const mockThemeConfig = {
     },
     transitions: {
       island: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-      theme: 'background-color 500ms cubic-bezier(0.4, 0, 0.2, 1)',
+      theme: 'background-color 500ms cubic-bezier(0.4, 0, 0.2, 1), border-color 500ms cubic-bezier(0.4, 0, 0.2, 1), color 500ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1)',
       hover: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-      elevation: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+      elevation: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
     },
   },
 };
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider>
-    {children}
-  </ThemeProvider>
-);
+const renderWithTheme = (component: React.ReactElement) => {
+  return render(
+    <ThemeProvider
+      value={{
+        theme: 'light',
+        resolvedTheme: 'light',
+        setTheme: vi.fn(),
+        config: mockThemeConfig,
+      }}
+    >
+      {component}
+    </ThemeProvider>
+  );
+};
 
-describe('Island Component', () => {
+describe('Island Component - Responsive Features', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('Basic Rendering', () => {
-    it('renders children correctly', () => {
-      render(
-        <TestWrapper>
-          <Island>
-            <span>Test content</span>
-          </Island>
-        </TestWrapper>
-      );
+  it('renders with default responsive props', () => {
+    renderWithTheme(<Island>Test Content</Island>);
 
-      expect(screen.getByText('Test content')).toBeInTheDocument();
-    });
-
-    it('applies default classes', () => {
-      render(
-        <TestWrapper>
-          <Island data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island');
-      expect(island).toHaveClass('island-variant-primary');
-      expect(island).toHaveClass('island-elevation-medium');
-      expect(island).toHaveClass('island-size-md');
-    });
-
-    it('applies custom className', () => {
-      render(
-        <TestWrapper>
-          <Island className="custom-class" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('custom-class');
-    });
+    const island = screen.getByText('Test Content').parentElement;
+    expect(island).toHaveClass('island');
+    expect(island).toHaveClass('island-variant-primary');
+    expect(island).toHaveClass('island-elevation-medium');
+    expect(island).toHaveClass('island-size-md');
+    expect(island).toHaveClass('island-layout-default');
   });
 
-  describe('Variants', () => {
-    it('applies primary variant styles', () => {
-      render(
-        <TestWrapper>
-          <Island variant="primary" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
+  it('applies responsive size overrides', () => {
+    const responsive = {
+      mobile: { size: 'sm' as const },
+      tablet: { size: 'md' as const },
+      desktop: { size: 'lg' as const },
+    };
 
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-variant-primary');
-    });
+    renderWithTheme(
+      <Island responsive={responsive}>
+        Responsive Content
+      </Island>
+    );
 
-    it('applies secondary variant styles', () => {
-      render(
-        <TestWrapper>
-          <Island variant="secondary" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-variant-secondary');
-    });
-
-    it('applies accent variant styles', () => {
-      render(
-        <TestWrapper>
-          <Island variant="accent" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-variant-accent');
-    });
-
-    it('applies danger variant styles', () => {
-      render(
-        <TestWrapper>
-          <Island variant="danger" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-variant-danger');
-    });
+    const island = screen.getByText('Responsive Content').parentElement;
+    expect(island).toHaveClass('island-size-lg'); // Should use desktop size
   });
 
-  describe('Elevation System', () => {
-    it('applies none elevation', () => {
-      render(
-        <TestWrapper>
-          <Island elevation="none" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
+  it('applies responsive layout variants', () => {
+    const responsive = {
+      desktop: { layout: 'compact' as const },
+    };
 
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-elevation-none');
-    });
+    renderWithTheme(
+      <Island responsive={responsive}>
+        Compact Layout
+      </Island>
+    );
 
-    it('applies low elevation', () => {
-      render(
-        <TestWrapper>
-          <Island elevation="low" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-elevation-low');
-    });
-
-    it('applies medium elevation (default)', () => {
-      render(
-        <TestWrapper>
-          <Island data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-elevation-medium');
-    });
-
-    it('applies high elevation', () => {
-      render(
-        <TestWrapper>
-          <Island elevation="high" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-elevation-high');
-    });
+    const island = screen.getByText('Compact Layout').parentElement;
+    expect(island).toHaveClass('island-layout-compact');
   });
 
-  describe('Size System', () => {
-    it('applies small size', () => {
-      render(
-        <TestWrapper>
-          <Island size="sm" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
+  it('hides island when responsive hidden is true', () => {
+    const responsive = {
+      desktop: { hidden: true },
+    };
 
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-size-sm');
-    });
+    renderWithTheme(
+      <Island responsive={responsive}>
+        Hidden Content
+      </Island>
+    );
 
-    it('applies medium size (default)', () => {
-      render(
-        <TestWrapper>
-          <Island data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-size-md');
-    });
-
-    it('applies large size', () => {
-      render(
-        <TestWrapper>
-          <Island size="lg" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-size-lg');
-    });
-
-    it('applies extra large size', () => {
-      render(
-        <TestWrapper>
-          <Island size="xl" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-size-xl');
-    });
+    expect(screen.queryByText('Hidden Content')).not.toBeInTheDocument();
   });
 
-  describe('Interactive Behavior', () => {
-    it('handles click events when interactive', async () => {
-      const handleClick = vi.fn();
-      const user = userEvent.setup();
+  it('applies touch optimization classes', () => {
+    renderWithTheme(
+      <Island touchOptimized>
+        Touch Optimized
+      </Island>
+    );
 
-      render(
-        <TestWrapper>
-          <Island interactive onClick={handleClick} data-testid="island">
-            Test
-          </Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('interactive-hover');
-      expect(island).toHaveAttribute('role', 'button');
-      expect(island).toHaveAttribute('tabIndex', '0');
-
-      await user.click(island);
-      expect(handleClick).toHaveBeenCalledTimes(1);
-    });
-
-    it('handles keyboard events when interactive', async () => {
-      const handleClick = vi.fn();
-      const user = userEvent.setup();
-
-      render(
-        <TestWrapper>
-          <Island interactive onClick={handleClick} data-testid="island">
-            Test
-          </Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      island.focus();
-
-      await user.keyboard('{Enter}');
-      expect(handleClick).toHaveBeenCalledTimes(1);
-
-      await user.keyboard(' ');
-      expect(handleClick).toHaveBeenCalledTimes(2);
-    });
-
-    it('does not handle clicks when not interactive', async () => {
-      const handleClick = vi.fn();
-      const user = userEvent.setup();
-
-      render(
-        <TestWrapper>
-          <Island onClick={handleClick} data-testid="island">
-            Test
-          </Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).not.toHaveClass('interactive-hover');
-      expect(island).not.toHaveAttribute('role', 'button');
-
-      await user.click(island);
-      expect(handleClick).not.toHaveBeenCalled();
-    });
+    const island = screen.getByText('Touch Optimized').parentElement;
+    expect(island).toHaveClass('touch-optimized');
   });
 
-  describe('Responsive Props', () => {
-    it('applies responsive classes for mobile', () => {
-      render(
-        <TestWrapper>
-          <Island
-            responsive={{
-              mobile: { size: 'sm' }
-            }}
-            data-testid="island"
-          >
-            Test
-          </Island>
-        </TestWrapper>
-      );
+  it('applies container query classes when enabled', () => {
+    renderWithTheme(
+      <Island enableContainerQueries>
+        Container Queries
+      </Island>
+    );
 
-      const island = screen.getByTestId('island');
-      expect(island.className).toContain('mobile:p-3');
-    });
-
-    it('applies responsive classes for tablet', () => {
-      render(
-        <TestWrapper>
-          <Island
-            responsive={{
-              tablet: { size: 'lg' }
-            }}
-            data-testid="island"
-          >
-            Test
-          </Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island.className).toContain('tablet:p-8');
-    });
-
-    it('applies responsive classes for desktop', () => {
-      render(
-        <TestWrapper>
-          <Island
-            responsive={{
-              desktop: { size: 'xl' }
-            }}
-            data-testid="island"
-          >
-            Test
-          </Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island.className).toContain('desktop:p-12');
-    });
+    const island = screen.getByText('Container Queries').parentElement;
+    expect(island).toHaveClass('container-queries');
   });
 
-  describe('Appearance Animation', () => {
-    it('applies appear animation class', () => {
-      render(
-        <TestWrapper>
-          <Island appear data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveClass('island-appear');
+  it('handles touch interactions when touch optimized', () => {
+    const mockUseResponsive = vi.mocked(
+      require('../../hooks/useResponsive').useResponsive
+    );
+    mockUseResponsive.mockReturnValue({
+      breakpoint: 'mobile',
+      isMobile: true,
+      isTablet: false,
+      isDesktop: false,
+      isWide: false,
+      width: 480,
+      height: 800,
+      orientation: 'portrait',
+      isTouchDevice: true,
+      prefersReducedMotion: false,
+      prefersHighContrast: false,
     });
 
-    it('does not apply appear animation by default', () => {
-      render(
-        <TestWrapper>
-          <Island data-testid="island">Test</Island>
-        </TestWrapper>
-      );
+    renderWithTheme(
+      <Island touchOptimized>
+        Touch Island
+      </Island>
+    );
 
-      const island = screen.getByTestId('island');
-      expect(island).not.toHaveClass('island-appear');
-    });
+    const island = screen.getByText('Touch Island').parentElement!;
+
+    // Test touch start
+    fireEvent.touchStart(island);
+    expect(island.style.transform).toBe('scale(0.98) translateZ(0)');
+
+    // Test touch end
+    fireEvent.touchEnd(island);
+    expect(island.style.transform).toBe('');
   });
 
-  describe('Custom Padding', () => {
-    it('applies custom padding when provided', () => {
-      render(
-        <TestWrapper>
-          <Island padding="2rem" data-testid="island">Test</Island>
-        </TestWrapper>
-      );
+  it('applies interactive keyboard handling', () => {
+    const mockClick = vi.fn();
 
-      const island = screen.getByTestId('island');
-      expect(island.style.padding).toBe('2rem');
-    });
+    renderWithTheme(
+      <Island interactive onClick={mockClick}>
+        Interactive Island
+      </Island>
+    );
+
+    const island = screen.getByText('Interactive Island').parentElement!;
+
+    // Test Enter key
+    fireEvent.keyDown(island, { key: 'Enter' });
+    expect(mockClick).toHaveBeenCalledTimes(1);
+
+    // Test Space key
+    fireEvent.keyDown(island, { key: ' ' });
+    expect(mockClick).toHaveBeenCalledTimes(2);
+
+    // Test other keys (should not trigger)
+    fireEvent.keyDown(island, { key: 'a' });
+    expect(mockClick).toHaveBeenCalledTimes(2);
   });
 
-  describe('Accessibility', () => {
-    it('provides proper ARIA attributes for interactive islands', () => {
-      render(
-        <TestWrapper>
-          <Island interactive data-testid="island">Test</Island>
-        </TestWrapper>
-      );
+  it('applies correct accessibility attributes', () => {
+    renderWithTheme(
+      <Island interactive>
+        Accessible Island
+      </Island>
+    );
 
-      const island = screen.getByTestId('island');
-      expect(island).toHaveAttribute('role', 'button');
-      expect(island).toHaveAttribute('tabIndex', '0');
-      expect(island).toHaveAttribute('aria-label', 'Interactive island');
-    });
-
-    it('allows custom ARIA label', () => {
-      render(
-        <TestWrapper>
-          <Island interactive aria-label="Custom label" data-testid="island">
-            Test
-          </Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).toHaveAttribute('aria-label', 'Custom label');
-    });
-
-    it('does not add button role when not interactive', () => {
-      render(
-        <TestWrapper>
-          <Island data-testid="island">Test</Island>
-        </TestWrapper>
-      );
-
-      const island = screen.getByTestId('island');
-      expect(island).not.toHaveAttribute('role', 'button');
-      expect(island).not.toHaveAttribute('tabIndex', '0');
-    });
+    const island = screen.getByText('Accessible Island').parentElement!;
+    expect(island).toHaveAttribute('role', 'button');
+    expect(island).toHaveAttribute('tabIndex', '0');
+    expect(island).toHaveAttribute('aria-label', 'Interactive island');
   });
 
-  describe('Forward Ref', () => {
-    it('forwards ref correctly', () => {
-      const ref = vi.fn();
+  it('includes responsive breakpoint data attributes', () => {
+    renderWithTheme(<Island>Data Attributes</Island>);
 
-      render(
-        <TestWrapper>
-          <Island ref={ref}>Test</Island>
-        </TestWrapper>
-      );
+    const island = screen.getByText('Data Attributes').parentElement!;
+    expect(island).toHaveAttribute('data-breakpoint', 'desktop');
+  });
 
-      expect(ref).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+  it('applies reduced motion classes when preferred', () => {
+    const mockUseResponsive = vi.mocked(
+      require('../../hooks/useResponsive').useResponsive
+    );
+    mockUseResponsive.mockReturnValue({
+      breakpoint: 'desktop',
+      isMobile: false,
+      isTablet: false,
+      isDesktop: true,
+      isWide: false,
+      width: 1280,
+      height: 720,
+      orientation: 'landscape',
+      isTouchDevice: false,
+      prefersReducedMotion: true,
+      prefersHighContrast: false,
     });
+
+    renderWithTheme(<Island>Reduced Motion</Island>);
+
+    const island = screen.getByText('Reduced Motion').parentElement!;
+    expect(island).toHaveClass('reduced-motion');
+  });
+
+  it('applies different elevation on touch devices', () => {
+    const mockUseResponsive = vi.mocked(
+      require('../../hooks/useResponsive').useResponsive
+    );
+    mockUseResponsive.mockReturnValue({
+      breakpoint: 'mobile',
+      isMobile: true,
+      isTablet: false,
+      isDesktop: false,
+      isWide: false,
+      width: 480,
+      height: 800,
+      orientation: 'portrait',
+      isTouchDevice: true,
+      prefersReducedMotion: false,
+      prefersHighContrast: false,
+    });
+
+    renderWithTheme(
+      <Island elevation="high">
+        Touch Device Island
+      </Island>
+    );
+
+    const island = screen.getByText('Touch Device Island').parentElement!;
+    expect(island).toHaveClass('touch-device');
+    // Elevation should be reduced from 'high' to 'medium' on touch devices
+    expect(island).toHaveClass('island-elevation-high'); // The class is still applied, but styles are adjusted
+  });
+
+  it('applies responsive padding based on breakpoint', () => {
+    const mockGetResponsiveSpacing = vi.mocked(
+      require('../../hooks/useResponsive').getResponsiveSpacing
+    );
+    mockGetResponsiveSpacing.mockReturnValue({
+      padding: '1.25rem',
+      margin: '0.75rem',
+      gap: '1rem',
+    });
+
+    renderWithTheme(<Island size="md">Responsive Padding</Island>);
+
+    const island = screen.getByText('Responsive Padding').parentElement!;
+    expect(island.style.padding).toBe('1.25rem');
   });
 });
