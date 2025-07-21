@@ -1,1 +1,0 @@
-Note that the current project is in a windows enviroment that doens thave node or npm or anything installed,so execute any test or command in the docker
