@@ -246,12 +246,56 @@ code {
   box-shadow: var(--shadow-low);
 }
 
+/* Island Container Styles */
+.island-container {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.island-container-layout-grid {
+  /* Grid layout styles applied via JavaScript */
+}
+
+.island-container-layout-flex {
+  /* Flex layout styles applied via JavaScript */
+}
+
+.island-container-layout-masonry {
+  /* Masonry layout styles applied via JavaScript */
+  /* Fallback for browsers that don't support masonry */
+  grid-auto-rows: auto;
+}
+
+.island-container-centered {
+  /* Centering styles applied via JavaScript */
+}
+
+.island-container-gradient {
+  /* Gradient background applied via JavaScript */
+}
+
+/* Responsive Grid System */
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
 /* Responsive breakpoints */
 @media (max-width: 640px) {
   .mobile\:p-3 { padding: 0.75rem !important; }
   .mobile\:p-6 { padding: 1.5rem !important; }
   .mobile\:p-8 { padding: 2rem !important; }
   .mobile\:p-12 { padding: 3rem !important; }
+  
+  .mobile\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .mobile\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mobile\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  
+  .island-container {
+    padding: 0.5rem;
+  }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
@@ -259,6 +303,15 @@ code {
   .tablet\:p-6 { padding: 1.5rem !important; }
   .tablet\:p-8 { padding: 2rem !important; }
   .tablet\:p-12 { padding: 3rem !important; }
+  
+  .tablet\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .tablet\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tablet\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tablet\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  
+  .island-container {
+    padding: 1rem;
+  }
 }
 
 @media (min-width: 1025px) {
@@ -266,6 +319,17 @@ code {
   .desktop\:p-6 { padding: 1.5rem !important; }
   .desktop\:p-8 { padding: 2rem !important; }
   .desktop\:p-12 { padding: 3rem !important; }
+  
+  .desktop\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .desktop\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .desktop\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .desktop\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .desktop\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .desktop\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  
+  .island-container {
+    padding: 1.5rem;
+  }
 }
 
 /* Reduced motion support */

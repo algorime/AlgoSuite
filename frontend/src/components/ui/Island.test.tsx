@@ -410,7 +410,7 @@ describe('Island Component', () => {
       );
 
       const island = screen.getByTestId('island');
-      expect(island).toHaveStyle({ padding: '2rem' });
+      expect(island.style.padding).toBe('2rem');
     });
   });
 

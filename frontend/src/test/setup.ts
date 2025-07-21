@@ -1,4 +1,14 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
+
+// Mock scrollIntoView for DOM elements
+Element.prototype.scrollIntoView = vi.fn();
+
+// Mock HTMLElement.scrollIntoView specifically
+Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+  configurable: true,
+  value: vi.fn(),
+});
 
 // Mock CSS custom properties for tests
 Object.defineProperty(window, 'getComputedStyle', {

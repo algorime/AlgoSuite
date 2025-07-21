@@ -30,6 +30,35 @@ export const lightThemeConfig: Omit<ThemeConfig, 'mode'> = {
       margin: '1rem',
       gap: '1rem',
     },
+    responsive: {
+      mobile: {
+        padding: '1rem',
+        margin: '0.5rem',
+        gap: '0.75rem',
+      },
+      tablet: {
+        padding: '1.25rem',
+        margin: '0.75rem',
+        gap: '1rem',
+      },
+      desktop: {
+        padding: '1.5rem',
+        margin: '1rem',
+        gap: '1.25rem',
+      },
+    },
+  },
+  breakpoints: {
+    mobile: '640px',
+    tablet: '1024px',
+    desktop: '1280px',
+    wide: '1536px',
+    containerQueries: {
+      small: '320px',
+      medium: '480px',
+      large: '768px',
+      xlarge: '1024px',
+    },
   },
   borderRadius: {
     island: '0.75rem', // 12px - more appropriate for islands

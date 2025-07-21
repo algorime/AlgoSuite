@@ -1,0 +1,153 @@
+/* Dashboard Island Styles */
+.dashboard-island-container {
+  padding: 1.5rem;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Metric Island Styles */
+.metric-island {
+  transition: all 0.2s ease-in-out;
+}
+
+.metric-island:hover {
+  transform: translateY(-2px);
+}
+
+/* Chart Island Styles */
+.chart-island {
+  transition: all 0.2s ease-in-out;
+}
+
+.chart-island:hover {
+  transform: translateY(-1px);
+}
+
+/* Filter Island Styles */
+.filter-island {
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+}
+
+/* Recent Findings Island Styles */
+.recent-findings-island {
+  transition: all 0.2s ease-in-out;
+}
+
+.recent-findings-island:hover {
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .dashboard-island-container {
+    padding: 1rem;
+  }
+  
+  .filter-island {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-island-container {
+    padding: 1.25rem;
+  }
+}
+
+/* Grid Layout Enhancements */
+.dashboard-island-container .grid {
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .dashboard-island-container .grid {
+    gap: 1rem;
+  }
+}
+
+/* Animation Enhancements */
+.metric-island,
+.chart-island,
+.filter-island,
+.recent-findings-island {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover Effects for Interactive Elements */
+.metric-island:hover .metric-icon,
+.chart-island:hover .chart-header,
+.recent-findings-island:hover .findings-item {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Loading States */
+.chart-island.loading {
+  opacity: 0.7;
+}
+
+.chart-island.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #8b5cf6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+  .dashboard-island-container {
+    color-scheme: dark;
+  }
+}
+
+/* Focus States for Accessibility */
+.metric-island:focus-within,
+.chart-island:focus-within,
+.filter-island:focus-within,
+.recent-findings-island:focus-within {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .dashboard-island-container {
+    padding: 0;
+  }
+  
+  .filter-island {
+    display: none;
+  }
+  
+  .metric-island,
+  .chart-island,
+  .recent-findings-island {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb;
+  }
+}

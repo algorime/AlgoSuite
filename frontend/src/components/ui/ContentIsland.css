@@ -1,0 +1,139 @@
+/* ContentIsland Styles */
+
+.content-island {
+  position: relative;
+  overflow: hidden;
+}
+
+.content-island-fill-height {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-island-body {
+  flex: 1;
+  min-height: 0; /* Allow flex child to shrink */
+}
+
+.content-island-header {
+  flex-shrink: 0;
+}
+
+/* Content type specific styles */
+.content-island-chat {
+  --content-accent-color: var(--color-interactive-primary);
+}
+
+.content-island-editor {
+  --content-accent-color: #10b981;
+}
+
+.content-island-dashboard {
+  --content-accent-color: #8b5cf6;
+}
+
+.content-island-studio {
+  --content-accent-color: var(--color-interactive-primary);
+}
+
+/* Loading state */
+.content-island-loading {
+  pointer-events: none;
+}
+
+.content-island-loading .content-island-body {
+  opacity: 0.7;
+}
+
+/* Transition animations */
+.content-island-transitioning {
+  transform: translateY(10px);
+  opacity: 0.8;
+  transition: all var(--transition-duration-normal) var(--transition-easing);
+}
+
+/* Content transition wrapper */
+.content-transition-wrapper {
+  animation: contentFadeIn var(--transition-duration-normal) var(--transition-easing);
+}
+
+.content-island-container {
+  animation: contentSlideIn var(--transition-duration-normal) var(--transition-easing);
+}
+
+/* Keyframe animations */
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content-island {
+    margin: 0.5rem;
+  }
+  
+  .content-island-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* Studio island specific styles */
+.studio-island-wrapper {
+  padding: 0 !important;
+}
+
+.studio-island-wrapper .content-island-body {
+  padding: 0;
+}
+
+/* Hover effects for interactive content islands */
+.content-island:hover {
+  transform: translateY(-2px);
+  transition: transform var(--transition-duration-fast) var(--transition-easing);
+}
+
+.content-island-studio:hover {
+  transform: none; /* Disable hover effect for studio as it's complex */
+}
+
+/* Focus states for accessibility */
+.content-island:focus-within {
+  outline: 2px solid var(--color-interactive-primary);
+  outline-offset: 2px;
+}
+
+/* Skeleton loading animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.content-island-loading .animate-pulse {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s infinite;
+}

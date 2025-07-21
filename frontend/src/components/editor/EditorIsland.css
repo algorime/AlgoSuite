@@ -1,0 +1,344 @@
+/* EditorIsland Styles */
+.editor-island-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-island-gap);
+  height: 100%;
+}
+
+/* Floating Toolbar Island */
+.editor-toolbar-island {
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.editor-toolbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.payload-buttons {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.payload-button {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  transition: var(--transition-hover);
+}
+
+.payload-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-low);
+}
+
+.execute-button {
+  background: var(--color-interactive-primary);
+  color: white;
+  font-weight: 500;
+  transition: var(--transition-hover);
+}
+
+.execute-button:hover:not(:disabled) {
+  background: var(--color-interactive-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Main Editor Island */
+.editor-main-island {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Allow flex child to shrink */
+}
+
+/* Tab System */
+.editor-tabs-container {
+  border-bottom: 1px solid var(--color-island-border);
+  margin-bottom: 1rem;
+}
+
+.editor-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.editor-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.editor-tab-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.editor-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--border-radius-button);
+  transition: var(--transition-hover);
+  white-space: nowrap;
+  position: relative;
+}
+
+.editor-tab:hover {
+  background: var(--color-interactive-secondary);
+  color: var(--color-text-primary);
+}
+
+.editor-tab.active {
+  background: var(--color-interactive-primary);
+  color: white;
+  box-shadow: var(--shadow-low);
+}
+
+.editor-tab.dirty .tab-name::after {
+  content: '';
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 0.375rem;
+  height: 0.375rem;
+  background: #f59e0b;
+  border-radius: 50%;
+}
+
+.dirty-indicator {
+  color: #f59e0b;
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.tab-close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: var(--transition-hover);
+  opacity: 0.7;
+  margin-left: 0.25rem;
+}
+
+.tab-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 1;
+}
+
+.add-tab-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px dashed var(--color-island-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--border-radius-button);
+  transition: var(--transition-hover);
+  margin-left: 0.5rem;
+}
+
+.add-tab-button:hover {
+  background: var(--color-interactive-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-interactive-primary);
+}
+
+/* Editor Content */
+.editor-content-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.monaco-editor-wrapper {
+  flex: 1;
+  border: 1px solid var(--color-island-border);
+  border-radius: var(--border-radius-input);
+  overflow: hidden;
+  background: var(--color-island-bg);
+  min-height: 0;
+}
+
+/* Monaco Editor Theme Integration */
+.monaco-editor-wrapper .monaco-editor {
+  background: transparent !important;
+}
+
+.monaco-editor-wrapper .monaco-editor .margin {
+  background: transparent !important;
+}
+
+.monaco-editor-wrapper .monaco-editor .monaco-editor-background {
+  background: transparent !important;
+}
+
+/* Status Bar */
+.editor-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-island-border);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.status-left,
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-item {
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .editor-toolbar-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .toolbar-section {
+    justify-content: center;
+  }
+  
+  .payload-buttons {
+    justify-content: center;
+  }
+  
+  .editor-tabs {
+    padding-bottom: 0.5rem;
+  }
+  
+  .editor-status-bar {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .status-left,
+  .status-right {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+}
+
+/* Focus Management */
+.editor-tab:focus-visible {
+  outline: 2px solid var(--color-interactive-primary);
+  outline-offset: 2px;
+}
+
+.add-tab-button:focus-visible {
+  outline: 2px solid var(--color-interactive-primary);
+  outline-offset: 2px;
+}
+
+.tab-close-button:focus-visible {
+  outline: 2px solid var(--color-interactive-primary);
+  outline-offset: 1px;
+}
+
+/* Animation Support */
+.editor-island-container .island-appear {
+  animation: islandAppear var(--transition-duration-normal) var(--transition-easing);
+}
+
+@keyframes islandAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .editor-island-container * {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .payload-button:hover,
+  .execute-button:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .editor-tab {
+    border: 1px solid var(--color-text-primary);
+  }
+  
+  .editor-tab.active {
+    border-color: var(--color-interactive-primary);
+    border-width: 2px;
+  }
+  
+  .monaco-editor-wrapper {
+    border-width: 2px;
+  }
+}
